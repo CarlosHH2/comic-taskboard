@@ -10,8 +10,7 @@ import { MessageSquare, Plus } from "lucide-react";
 interface Task {
   id: number;
   estado: string;
-  titulo?: string;
-  descripcion?: string;
+  created_at: string;
 }
 
 interface Comment {

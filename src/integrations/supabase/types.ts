@@ -9,6 +9,35 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      Comment: {
+        Row: {
+          contenido: string
+          created_at: string | null
+          id: number
+          task_id: number | null
+        }
+        Insert: {
+          contenido: string
+          created_at?: string | null
+          id?: number
+          task_id?: number | null
+        }
+        Update: {
+          contenido?: string
+          created_at?: string | null
+          id?: number
+          task_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Comment_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "Task"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       Task: {
         Row: {
           created_at: string
