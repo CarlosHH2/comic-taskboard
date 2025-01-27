@@ -44,6 +44,81 @@ export type Database = {
           },
         ]
       }
+      conceptos: {
+        Row: {
+          created_at: string | null
+          descripcion: string
+          id: number
+          nombre: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descripcion: string
+          id?: number
+          nombre: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descripcion?: string
+          id?: number
+          nombre?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      cotizaciones: {
+        Row: {
+          concepto_id: number | null
+          created_at: string | null
+          estatus: string | null
+          frecuencia_pago: string
+          id: number
+          monto: number
+          nombre: string
+          prospecto_id: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          concepto_id?: number | null
+          created_at?: string | null
+          estatus?: string | null
+          frecuencia_pago: string
+          id?: number
+          monto: number
+          nombre: string
+          prospecto_id?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          concepto_id?: number | null
+          created_at?: string | null
+          estatus?: string | null
+          frecuencia_pago?: string
+          id?: number
+          monto?: number
+          nombre?: string
+          prospecto_id?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cotizaciones_concepto_id_fkey"
+            columns: ["concepto_id"]
+            isOneToOne: false
+            referencedRelation: "conceptos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cotizaciones_prospecto_id_fkey"
+            columns: ["prospecto_id"]
+            isOneToOne: false
+            referencedRelation: "prospectos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       DeletionHistory: {
         Row: {
           deleted_at: string | null
@@ -71,6 +146,38 @@ export type Database = {
         }
         Relationships: []
       }
+      evidencias_pago: {
+        Row: {
+          archivo_url: string
+          cotizacion_id: number | null
+          created_at: string | null
+          id: number
+          monto: number
+        }
+        Insert: {
+          archivo_url: string
+          cotizacion_id?: number | null
+          created_at?: string | null
+          id?: number
+          monto: number
+        }
+        Update: {
+          archivo_url?: string
+          cotizacion_id?: number | null
+          created_at?: string | null
+          id?: number
+          monto?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidencias_pago_cotizacion_id_fkey"
+            columns: ["cotizacion_id"]
+            isOneToOne: false
+            referencedRelation: "cotizaciones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -86,6 +193,48 @@ export type Database = {
           created_at?: string | null
           id?: string
           nombre?: string | null
+        }
+        Relationships: []
+      }
+      prospectos: {
+        Row: {
+          apellido_materno: string
+          apellido_paterno: string
+          created_at: string | null
+          email: string
+          estatus: Database["public"]["Enums"]["prospecto_status"] | null
+          fuente: Database["public"]["Enums"]["prospecto_source"]
+          id: number
+          nombre: string
+          telefono1: string
+          telefono2: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          apellido_materno: string
+          apellido_paterno: string
+          created_at?: string | null
+          email: string
+          estatus?: Database["public"]["Enums"]["prospecto_status"] | null
+          fuente: Database["public"]["Enums"]["prospecto_source"]
+          id?: number
+          nombre: string
+          telefono1: string
+          telefono2?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          apellido_materno?: string
+          apellido_paterno?: string
+          created_at?: string | null
+          email?: string
+          estatus?: Database["public"]["Enums"]["prospecto_status"] | null
+          fuente?: Database["public"]["Enums"]["prospecto_source"]
+          id?: number
+          nombre?: string
+          telefono1?: string
+          telefono2?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -176,6 +325,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      prospecto_source: "web" | "recomendacion"
+      prospecto_status:
+        | "Nuevo"
+        | "Sí contestó"
+        | "Agendado"
+        | "Cita realizada"
+        | "2da cita realizada"
+        | "Cliente (emisión)"
     }
     CompositeTypes: {
       [_ in never]: never

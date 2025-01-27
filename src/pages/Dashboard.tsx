@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import KanbanBoard from "@/components/KanbanBoard";
-import UserManagement from "@/components/UserManagement";
-import DeletionHistory from "@/components/DeletionHistory";
 import { Loader2, LogOut, Mail, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -129,26 +127,10 @@ const Dashboard = () => {
         <Tabs defaultValue="kanban">
           <TabsList>
             <TabsTrigger value="kanban">Tablero Kanban</TabsTrigger>
-            {userRole?.role === "admin" && (
-              <>
-                <TabsTrigger value="users">Gestión de Usuarios</TabsTrigger>
-                <TabsTrigger value="history">Historial de Eliminaciones</TabsTrigger>
-              </>
-            )}
           </TabsList>
           <TabsContent value="kanban">
             <KanbanBoard session={session} />
           </TabsContent>
-          {userRole?.role === "admin" && (
-            <>
-              <TabsContent value="users">
-                <UserManagement />
-              </TabsContent>
-              <TabsContent value="history">
-                <DeletionHistory />
-              </TabsContent>
-            </>
-          )}
         </Tabs>
       </main>
     </div>
