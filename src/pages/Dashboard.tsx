@@ -2,16 +2,47 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import KanbanBoard from "@/components/KanbanBoard";
+import UserManagement from "@/components/UserManagement";
 import { Loader2, LogOut, Mail, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
 
 const Dashboard = () => {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const { data: userRole } = useQuery({
+    queryKey: ["userRole"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session?.user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user.id,
+  });
+
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile", session?.user.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session?.user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user.id,
+  });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -19,7 +50,6 @@ const Dashboard = () => {
         navigate("/auth");
       } else {
         setSession(session);
-        fetchUserProfile(session.user.id);
       }
       setLoading(false);
     });
@@ -31,42 +61,12 @@ const Dashboard = () => {
         navigate("/auth");
       } else {
         setSession(session);
-        fetchUserProfile(session.user.id);
       }
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Error fetching user profile:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "No se pudo cargar el perfil del usuario",
-        });
-        return;
-      }
-      
-      setUserProfile(data);
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Error al cargar el perfil del usuario",
-      });
-    }
-  };
 
   const handleSignOut = async () => {
     try {
@@ -120,9 +120,14 @@ const Dashboard = () => {
           </div>
         </div>
       </header>
-      <div>
+      <main className="container mx-auto px-4 py-8">
+        {userRole?.role === "admin" && (
+          <div className="mb-8">
+            <UserManagement />
+          </div>
+        )}
         <KanbanBoard session={session} />
-      </div>
+      </main>
     </div>
   );
 };
