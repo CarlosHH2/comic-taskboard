@@ -19,7 +19,7 @@ const DeletionHistory = () => {
         .from("DeletionHistory")
         .select(`
           *,
-          deleted_by_user:profiles!DeletionHistory_deleted_by_fkey(email)
+          deleted_by_user:profiles(nombre)
         `)
         .order("deleted_at", { ascending: false });
 
@@ -48,7 +48,7 @@ const DeletionHistory = () => {
             <TableRow key={item.id}>
               <TableCell>{item.entity_type}</TableCell>
               <TableCell>{item.entity_id}</TableCell>
-              <TableCell>{item.deleted_by_user?.email}</TableCell>
+              <TableCell>{item.deleted_by_user?.nombre}</TableCell>
               <TableCell>
                 {format(new Date(item.deleted_at), "PPpp", { locale: es })}
               </TableCell>
