@@ -14,7 +14,6 @@ export type Database = {
           contenido: string
           created_at: string | null
           deleted_at: string | null
-          deleted_by: string | null
           id: number
           task_id: number | null
         }
@@ -22,7 +21,6 @@ export type Database = {
           contenido: string
           created_at?: string | null
           deleted_at?: string | null
-          deleted_by?: string | null
           id?: number
           task_id?: number | null
         }
@@ -30,7 +28,6 @@ export type Database = {
           contenido?: string
           created_at?: string | null
           deleted_at?: string | null
-          deleted_by?: string | null
           id?: number
           task_id?: number | null
         }
@@ -178,24 +175,6 @@ export type Database = {
           },
         ]
       }
-      profiles: {
-        Row: {
-          created_at: string | null
-          id: string
-          nombre: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id: string
-          nombre?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          nombre?: string | null
-        }
-        Relationships: []
-      }
       prospectos: {
         Row: {
           apellido_materno: string
@@ -240,64 +219,31 @@ export type Database = {
       }
       Task: {
         Row: {
-          assigned_to: string | null
           created_at: string
           deleted_at: string | null
-          deleted_by: string | null
           descripcion: string | null
           estado: string | null
           fecha_vencimiento: string | null
           id: number
           titulo: string | null
-          user_id: string | null
         }
         Insert: {
-          assigned_to?: string | null
           created_at?: string
           deleted_at?: string | null
-          deleted_by?: string | null
           descripcion?: string | null
           estado?: string | null
           fecha_vencimiento?: string | null
           id?: number
           titulo?: string | null
-          user_id?: string | null
         }
         Update: {
-          assigned_to?: string | null
           created_at?: string
           deleted_at?: string | null
-          deleted_by?: string | null
           descripcion?: string | null
           estado?: string | null
           fecha_vencimiento?: string | null
           id?: number
           titulo?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      user_roles: {
-        Row: {
-          created_at: string | null
-          created_by: string | null
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          created_by?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          created_by?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
         }
         Relationships: []
       }
