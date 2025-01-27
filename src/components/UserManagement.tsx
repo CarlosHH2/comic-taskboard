@@ -38,17 +38,17 @@ const UserManagement = () => {
         .select(`
           user_id,
           role,
-          profiles (
-            nombre,
-            id
+          users:user_id (
+            email,
+            raw_user_meta_data->nombre
           )
         `)
         .returns<{
           user_id: string;
           role: string;
-          profiles: {
+          users: {
+            email: string;
             nombre: string | null;
-            id: string;
           } | null;
         }[]>();
 
@@ -190,8 +190,8 @@ const UserManagement = () => {
         <TableBody>
           {users?.map((user) => (
             <TableRow key={user.user_id}>
-              <TableCell>{user.profiles?.nombre}</TableCell>
-              <TableCell>{user.user_id}</TableCell>
+              <TableCell>{user.users?.nombre}</TableCell>
+              <TableCell>{user.users?.email}</TableCell>
               <TableCell className="capitalize">{user.role}</TableCell>
             </TableRow>
           ))}
