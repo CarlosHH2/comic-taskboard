@@ -20,7 +20,11 @@ interface Comment {
   created_at: string;
 }
 
-const KanbanBoard = () => {
+interface KanbanBoardProps {
+  session: any;
+}
+
+const KanbanBoard = ({ session }: KanbanBoardProps) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -35,10 +39,12 @@ const KanbanBoard = () => {
   ];
 
   useEffect(() => {
-    fetchTasks();
-    fetchComments();
-    subscribeToChanges();
-  }, []);
+    if (session) {
+      fetchTasks();
+      fetchComments();
+      subscribeToChanges();
+    }
+  }, [session]);
 
   const subscribeToChanges = () => {
     const channel = supabase
@@ -118,7 +124,10 @@ const KanbanBoard = () => {
   };
 
   const addTask = async (estado: string) => {
-    const { error } = await supabase.from("Task").insert([{ estado }]);
+    const { error } = await supabase.from("Task").insert([{ 
+      estado,
+      user_id: session.user.id 
+    }]);
     if (error) {
       toast({
         variant: "destructive",
