@@ -25,7 +25,17 @@ const Auth = () => {
           email,
           password,
         });
-        if (error) throw error;
+        
+        if (error) {
+          if (error.message === "Invalid login credentials") {
+            throw new Error("Email o contraseña incorrectos");
+          } else if (error.message.includes("Email not confirmed")) {
+            throw new Error("Por favor verifica tu correo electrónico antes de iniciar sesión");
+          } else {
+            throw error;
+          }
+        }
+        
         navigate("/dashboard");
       } else {
         const { error } = await supabase.auth.signUp({
@@ -37,11 +47,25 @@ const Auth = () => {
             },
           },
         });
-        if (error) throw error;
+        
+        if (error) {
+          if (error.message.includes("already registered")) {
+            throw new Error("Este correo electrónico ya está registrado");
+          } else {
+            throw error;
+          }
+        }
+        
         toast({
           title: "Registro exitoso",
-          description: "Por favor verifica tu correo electrónico",
+          description: "Por favor verifica tu correo electrónico para activar tu cuenta",
         });
+        
+        // Reset form after successful signup
+        setEmail("");
+        setPassword("");
+        setNombre("");
+        setIsLogin(true);
       }
     } catch (error: any) {
       toast({
@@ -76,6 +100,7 @@ const Auth = () => {
                   onChange={(e) => setNombre(e.target.value)}
                   required={!isLogin}
                   className="font-comic"
+                  disabled={loading}
                 />
               </div>
             )}
@@ -90,6 +115,7 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="font-comic"
+                disabled={loading}
               />
             </div>
             <div className="space-y-2">
@@ -103,6 +129,8 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="font-comic"
+                disabled={loading}
+                minLength={6}
               />
             </div>
             <Button
@@ -121,6 +149,7 @@ const Auth = () => {
               variant="link"
               className="w-full font-comic"
               onClick={() => setIsLogin(!isLogin)}
+              disabled={loading}
             >
               {isLogin
                 ? "¿No tienes cuenta? Regístrate"
