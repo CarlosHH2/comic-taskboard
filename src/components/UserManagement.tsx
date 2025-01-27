@@ -38,7 +38,7 @@ const UserManagement = () => {
         .select(`
           user_id,
           role,
-          users:user_id (
+          users!user_roles_user_id_fkey (
             email,
             raw_user_meta_data->nombre
           )
