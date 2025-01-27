@@ -33,24 +33,29 @@ const UserManagement = () => {
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const { data: users, error } = await supabase
+      const { data: userRoles, error } = await supabase
         .from("user_roles")
         .select(`
           user_id,
           role,
-          profiles (
-            nombre,
-            id
+          users:user_id (
+            email,
+            id,
+            raw_user_meta_data->nombre
           )
         `)
         .returns<{
           user_id: string;
           role: string;
-          profiles: { nombre: string | null; id: string } | null;
+          users: {
+            email: string;
+            id: string;
+            nombre: string | null;
+          } | null;
         }[]>();
 
       if (error) throw error;
-      return users;
+      return userRoles;
     },
   });
 
@@ -187,8 +192,8 @@ const UserManagement = () => {
         <TableBody>
           {users?.map((user) => (
             <TableRow key={user.user_id}>
-              <TableCell>{user.profiles?.nombre}</TableCell>
-              <TableCell>{user.profiles?.id}</TableCell>
+              <TableCell>{user.users?.nombre}</TableCell>
+              <TableCell>{user.users?.email}</TableCell>
               <TableCell className="capitalize">{user.role}</TableCell>
             </TableRow>
           ))}
