@@ -124,6 +124,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       was_created_by_me: {
         Args: {
           check_user_id: string

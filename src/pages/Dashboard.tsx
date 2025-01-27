@@ -5,7 +5,7 @@ import KanbanBoard from "@/components/KanbanBoard";
 import UserManagement from "@/components/UserManagement";
 import { Loader2, LogOut, Mail, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 
 const Dashboard = () => {
