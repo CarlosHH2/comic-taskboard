@@ -38,11 +38,16 @@ const UserManagement = () => {
         .select(`
           user_id,
           role,
-          profiles:user_id (
+          profiles (
             nombre,
             id
           )
-        `);
+        `)
+        .returns<{
+          user_id: string;
+          role: string;
+          profiles: { nombre: string | null; id: string } | null;
+        }[]>();
 
       if (error) throw error;
       return users;
@@ -180,7 +185,7 @@ const UserManagement = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users?.map((user: any) => (
+          {users?.map((user) => (
             <TableRow key={user.user_id}>
               <TableCell>{user.profiles?.nombre}</TableCell>
               <TableCell>{user.profiles?.id}</TableCell>
