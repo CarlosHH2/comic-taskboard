@@ -19,7 +19,6 @@ const Dashboard = () => {
         navigate("/auth");
       } else {
         setSession(session);
-        // Fetch user profile data
         fetchUserProfile(session.user.id);
       }
       setLoading(false);
@@ -46,12 +45,26 @@ const Dashboard = () => {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudo cargar el perfil del usuario",
+        });
+        return;
+      }
+      
       setUserProfile(data);
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error al cargar el perfil del usuario",
+      });
     }
   };
 
