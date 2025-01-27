@@ -21,7 +21,7 @@ const Dashboard = () => {
         .from("user_roles")
         .select("role")
         .eq("user_id", session?.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -36,9 +36,12 @@ const Dashboard = () => {
         .from("profiles")
         .select("*")
         .eq("id", session?.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) {
+        throw new Error("No se encontró el perfil del usuario");
+      }
       return data;
     },
     enabled: !!session?.user.id,

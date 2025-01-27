@@ -33,19 +33,19 @@ const UserManagement = () => {
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const { data: roles, error: rolesError } = await supabase
+      const { data: users, error } = await supabase
         .from("user_roles")
         .select(`
           user_id,
           role,
-          profiles:user_id (
+          profiles:profiles!user_roles_user_id_fkey (
             nombre,
             id
           )
         `);
 
-      if (rolesError) throw rolesError;
-      return roles;
+      if (error) throw error;
+      return users;
     },
   });
 
