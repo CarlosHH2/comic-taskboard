@@ -38,21 +38,51 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          nombre: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          nombre?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          nombre?: string | null
+        }
+        Relationships: []
+      }
       Task: {
         Row: {
           created_at: string
+          descripcion: string | null
           estado: string | null
+          fecha_vencimiento: string | null
           id: number
+          titulo: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string
+          descripcion?: string | null
           estado?: string | null
+          fecha_vencimiento?: string | null
           id?: number
+          titulo?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string
+          descripcion?: string | null
           estado?: string | null
+          fecha_vencimiento?: string | null
           id?: number
+          titulo?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
