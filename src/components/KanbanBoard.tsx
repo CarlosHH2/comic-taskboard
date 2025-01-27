@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { MessageSquare, Plus } from "lucide-react";
+import { MessageSquare, Plus, Trash2 } from "lucide-react";
 
 interface Task {
   id: number;
@@ -73,7 +73,10 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
   };
 
   const fetchTasks = async () => {
-    const { data, error } = await supabase.from("Task").select("*");
+    const { data, error } = await supabase
+      .from("Task")
+      .select("*")
+      .is("deleted_at", null);
     if (error) {
       toast({
         variant: "destructive",
@@ -86,7 +89,10 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
   };
 
   const fetchComments = async () => {
-    const { data, error } = await supabase.from("Comment").select("*");
+    const { data, error } = await supabase
+      .from("Comment")
+      .select("*")
+      .is("deleted_at", null);
     if (error) {
       toast({
         variant: "destructive",
@@ -96,6 +102,128 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
       return;
     }
     setComments(data || []);
+  };
+
+  const handleDeleteTask = async (taskId: number) => {
+    const { data: task } = await supabase
+      .from("Task")
+      .select("*")
+      .eq("id", taskId)
+      .single();
+
+    if (!task) {
+      toast({
+        variant: "destructive",
+        title: "Error al eliminar tarea",
+        description: "No se encontró la tarea",
+      });
+      return;
+    }
+
+    const { error: updateError } = await supabase
+      .from("Task")
+      .update({
+        deleted_at: new Date().toISOString(),
+        deleted_by: session.user.id,
+      })
+      .eq("id", taskId);
+
+    if (updateError) {
+      toast({
+        variant: "destructive",
+        title: "Error al eliminar tarea",
+        description: updateError.message,
+      });
+      return;
+    }
+
+    const { error: historyError } = await supabase
+      .from("DeletionHistory")
+      .insert([
+        {
+          entity_type: "Task",
+          entity_id: taskId,
+          deleted_by: session.user.id,
+          entity_data: task,
+        },
+      ]);
+
+    if (historyError) {
+      toast({
+        variant: "destructive",
+        title: "Error al registrar eliminación",
+        description: historyError.message,
+      });
+      return;
+    }
+
+    toast({
+      title: "Tarea eliminada",
+      description: "La tarea ha sido eliminada correctamente",
+    });
+
+    await fetchTasks();
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    const { data: comment } = await supabase
+      .from("Comment")
+      .select("*")
+      .eq("id", commentId)
+      .single();
+
+    if (!comment) {
+      toast({
+        variant: "destructive",
+        title: "Error al eliminar comentario",
+        description: "No se encontró el comentario",
+      });
+      return;
+    }
+
+    const { error: updateError } = await supabase
+      .from("Comment")
+      .update({
+        deleted_at: new Date().toISOString(),
+        deleted_by: session.user.id,
+      })
+      .eq("id", commentId);
+
+    if (updateError) {
+      toast({
+        variant: "destructive",
+        title: "Error al eliminar comentario",
+        description: updateError.message,
+      });
+      return;
+    }
+
+    const { error: historyError } = await supabase
+      .from("DeletionHistory")
+      .insert([
+        {
+          entity_type: "Comment",
+          entity_id: commentId,
+          deleted_by: session.user.id,
+          entity_data: comment,
+        },
+      ]);
+
+    if (historyError) {
+      toast({
+        variant: "destructive",
+        title: "Error al registrar eliminación",
+        description: historyError.message,
+      });
+      return;
+    }
+
+    toast({
+      title: "Comentario eliminado",
+      description: "El comentario ha sido eliminado correctamente",
+    });
+
+    await fetchComments();
   };
 
   const handleDragEnd = async (result: any) => {
@@ -189,10 +317,17 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
                               {...provided.dragHandleProps}
                               className="mb-4 bg-white shadow-sm hover:shadow-md transition-shadow duration-200 border-2 border-gray-200"
                             >
-                              <CardHeader>
+                              <CardHeader className="flex flex-row items-center justify-between">
                                 <CardTitle className="text-lg font-comic">
                                   Tarea #{task.id}
                                 </CardTitle>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleDeleteTask(task.id)}
+                                >
+                                  <Trash2 className="h-4 w-4 text-red-500" />
+                                </Button>
                               </CardHeader>
                               <CardContent>
                                 <div className="space-y-2">
@@ -201,9 +336,16 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
                                     .map((comment) => (
                                       <div
                                         key={comment.id}
-                                        className="bg-gray-50 p-2 rounded-md"
+                                        className="bg-gray-50 p-2 rounded-md flex items-center justify-between"
                                       >
                                         <p className="text-sm font-comic">{comment.contenido}</p>
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => handleDeleteComment(comment.id)}
+                                        >
+                                          <Trash2 className="h-4 w-4 text-red-500" />
+                                        </Button>
                                       </div>
                                     ))}
                                   {selectedTask === task.id && (

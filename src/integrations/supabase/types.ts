@@ -13,18 +13,24 @@ export type Database = {
         Row: {
           contenido: string
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: number
           task_id: number | null
         }
         Insert: {
           contenido: string
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: number
           task_id?: number | null
         }
         Update: {
           contenido?: string
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: number
           task_id?: number | null
         }
@@ -37,6 +43,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      DeletionHistory: {
+        Row: {
+          deleted_at: string | null
+          deleted_by: string
+          entity_data: Json
+          entity_id: number
+          entity_type: string
+          id: number
+        }
+        Insert: {
+          deleted_at?: string | null
+          deleted_by: string
+          entity_data: Json
+          entity_id: number
+          entity_type: string
+          id?: number
+        }
+        Update: {
+          deleted_at?: string | null
+          deleted_by?: string
+          entity_data?: Json
+          entity_id?: number
+          entity_type?: string
+          id?: number
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -60,6 +93,8 @@ export type Database = {
         Row: {
           assigned_to: string | null
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           descripcion: string | null
           estado: string | null
           fecha_vencimiento: string | null
@@ -70,6 +105,8 @@ export type Database = {
         Insert: {
           assigned_to?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           descripcion?: string | null
           estado?: string | null
           fecha_vencimiento?: string | null
@@ -80,6 +117,8 @@ export type Database = {
         Update: {
           assigned_to?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           descripcion?: string | null
           estado?: string | null
           fecha_vencimiento?: string | null
