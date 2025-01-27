@@ -38,7 +38,7 @@ const UserManagement = () => {
         .select(`
           user_id,
           role,
-          profiles!user_roles_user_id_fkey (
+          profiles (
             nombre,
             id
           )
