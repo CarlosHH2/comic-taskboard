@@ -19,7 +19,7 @@ const DeletionHistory = () => {
         .from("DeletionHistory")
         .select(`
           *,
-          deleted_by_user:deleted_by(email)
+          deleted_by_user:profiles!DeletionHistory_deleted_by_fkey(email)
         `)
         .order("deleted_at", { ascending: false });
 
