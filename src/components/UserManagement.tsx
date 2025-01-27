@@ -38,7 +38,7 @@ const UserManagement = () => {
         .select(`
           user_id,
           role,
-          profiles:profiles!user_roles_user_id_fkey (
+          user:profiles(
             nombre,
             id
           )
@@ -182,8 +182,8 @@ const UserManagement = () => {
         <TableBody>
           {users?.map((user: any) => (
             <TableRow key={user.user_id}>
-              <TableCell>{user.profiles?.nombre}</TableCell>
-              <TableCell>{user.profiles?.id}</TableCell>
+              <TableCell>{user.user?.nombre}</TableCell>
+              <TableCell>{user.user?.id}</TableCell>
               <TableCell className="capitalize">{user.role}</TableCell>
             </TableRow>
           ))}
