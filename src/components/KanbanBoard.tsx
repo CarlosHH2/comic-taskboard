@@ -20,11 +20,7 @@ interface Comment {
   created_at: string;
 }
 
-interface KanbanBoardProps {
-  session: any;
-}
-
-const KanbanBoard = ({ session }: KanbanBoardProps) => {
+const KanbanBoard = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -39,12 +35,10 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
   ];
 
   useEffect(() => {
-    if (session) {
-      fetchTasks();
-      fetchComments();
-      subscribeToChanges();
-    }
-  }, [session]);
+    fetchTasks();
+    fetchComments();
+    subscribeToChanges();
+  }, []);
 
   const subscribeToChanges = () => {
     const channel = supabase
@@ -124,7 +118,6 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
       .from("Task")
       .update({
         deleted_at: new Date().toISOString(),
-        deleted_by: session.user.id,
       })
       .eq("id", taskId);
 
@@ -133,26 +126,6 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
         variant: "destructive",
         title: "Error al eliminar tarea",
         description: updateError.message,
-      });
-      return;
-    }
-
-    const { error: historyError } = await supabase
-      .from("DeletionHistory")
-      .insert([
-        {
-          entity_type: "Task",
-          entity_id: taskId,
-          deleted_by: session.user.id,
-          entity_data: task,
-        },
-      ]);
-
-    if (historyError) {
-      toast({
-        variant: "destructive",
-        title: "Error al registrar eliminación",
-        description: historyError.message,
       });
       return;
     }
@@ -185,7 +158,6 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
       .from("Comment")
       .update({
         deleted_at: new Date().toISOString(),
-        deleted_by: session.user.id,
       })
       .eq("id", commentId);
 
@@ -194,26 +166,6 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
         variant: "destructive",
         title: "Error al eliminar comentario",
         description: updateError.message,
-      });
-      return;
-    }
-
-    const { error: historyError } = await supabase
-      .from("DeletionHistory")
-      .insert([
-        {
-          entity_type: "Comment",
-          entity_id: commentId,
-          deleted_by: session.user.id,
-          entity_data: comment,
-        },
-      ]);
-
-    if (historyError) {
-      toast({
-        variant: "destructive",
-        title: "Error al registrar eliminación",
-        description: historyError.message,
       });
       return;
     }
@@ -252,10 +204,10 @@ const KanbanBoard = ({ session }: KanbanBoardProps) => {
   };
 
   const addTask = async (estado: string) => {
-    const { error } = await supabase.from("Task").insert([{ 
-      estado,
-      user_id: session.user.id 
-    }]);
+    const { error } = await supabase
+      .from("Task")
+      .insert([{ estado }]);
+    
     if (error) {
       toast({
         variant: "destructive",
